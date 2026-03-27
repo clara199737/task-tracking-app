@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { PipelineBoard } from "@/components/pipeline/pipeline-board";
 import type { Deal } from "@/types";
 
+export const dynamic = "force-dynamic";
+
 export default async function PipelinePage() {
   const supabase = await createClient();
 
