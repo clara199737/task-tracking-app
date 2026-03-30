@@ -13,6 +13,8 @@ const dealSchema = z.object({
     .enum(["lead", "qualified", "proposal", "negotiation", "won", "lost"])
     .default("lead"),
   close_date: z.string().optional(),
+  next_action: z.string().max(100).optional(),
+  follow_up_date: z.string().optional(),
   notes: z.string().optional(),
 });
 
@@ -31,6 +33,8 @@ export async function createDeal(formData: FormData) {
     value: formData.get("value") ? Number(formData.get("value")) : undefined,
     stage: (formData.get("stage") as string) || "lead",
     close_date: (formData.get("close_date") as string) || undefined,
+    next_action: (formData.get("next_action") as string) || undefined,
+    follow_up_date: (formData.get("follow_up_date") as string) || undefined,
     notes: (formData.get("notes") as string) || undefined,
   };
 
@@ -47,6 +51,8 @@ export async function createDeal(formData: FormData) {
     value: parsed.data.value ?? null,
     stage: parsed.data.stage,
     close_date: parsed.data.close_date || null,
+    next_action: parsed.data.next_action || null,
+    follow_up_date: parsed.data.follow_up_date || null,
     notes: parsed.data.notes || null,
   });
 
@@ -70,6 +76,8 @@ export async function updateDeal(dealId: string, formData: FormData) {
     value: formData.get("value") ? Number(formData.get("value")) : undefined,
     stage: (formData.get("stage") as string) || "lead",
     close_date: (formData.get("close_date") as string) || undefined,
+    next_action: (formData.get("next_action") as string) || undefined,
+    follow_up_date: (formData.get("follow_up_date") as string) || undefined,
     notes: (formData.get("notes") as string) || undefined,
   };
 
@@ -87,6 +95,8 @@ export async function updateDeal(dealId: string, formData: FormData) {
       value: parsed.data.value ?? null,
       stage: parsed.data.stage,
       close_date: parsed.data.close_date || null,
+      next_action: parsed.data.next_action || null,
+      follow_up_date: parsed.data.follow_up_date || null,
       notes: parsed.data.notes || null,
       updated_at: new Date().toISOString(),
     })

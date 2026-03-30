@@ -347,6 +347,8 @@ export type Database = {
           value: number | null;
           stage: "lead" | "qualified" | "proposal" | "negotiation" | "won" | "lost";
           close_date: string | null;
+          next_action: string | null;
+          follow_up_date: string | null;
           notes: string | null;
           created_at: string;
           updated_at: string;
@@ -360,6 +362,8 @@ export type Database = {
           value?: number | null;
           stage?: "lead" | "qualified" | "proposal" | "negotiation" | "won" | "lost";
           close_date?: string | null;
+          next_action?: string | null;
+          follow_up_date?: string | null;
           notes?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -373,6 +377,8 @@ export type Database = {
           value?: number | null;
           stage?: "lead" | "qualified" | "proposal" | "negotiation" | "won" | "lost";
           close_date?: string | null;
+          next_action?: string | null;
+          follow_up_date?: string | null;
           notes?: string | null;
           created_at?: string;
           updated_at?: string;

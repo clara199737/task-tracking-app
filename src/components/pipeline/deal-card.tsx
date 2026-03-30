@@ -51,6 +51,14 @@ export function DealCard({ deal, onClick, isDragOverlay }: DealCardProps) {
             {deal.name}
           </p>
 
+          {deal.next_action && (
+            <p className="text-xs text-muted-foreground">
+              {deal.next_action.length > 60
+                ? deal.next_action.slice(0, 60) + "…"
+                : deal.next_action}
+            </p>
+          )}
+
           {deal.value != null && (
             <p className="text-sm font-medium text-primary-600">
               {formatCurrency(deal.value)}

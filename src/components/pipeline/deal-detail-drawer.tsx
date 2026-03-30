@@ -148,6 +148,22 @@ export function DealDetailDrawer({
                 defaultValue={deal.close_date ?? ""}
               />
 
+              <Input
+                id="drawer-next-action"
+                name="next_action"
+                label="Next Action"
+                maxLength={100}
+                defaultValue={deal.next_action ?? ""}
+              />
+
+              <Input
+                id="drawer-follow-up-date"
+                name="follow_up_date"
+                label="Follow-Up Reminder"
+                type="date"
+                defaultValue={deal.follow_up_date ?? ""}
+              />
+
               <Textarea
                 id="drawer-notes"
                 name="notes"
