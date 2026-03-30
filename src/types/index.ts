@@ -15,6 +15,9 @@ export type Deal = Database["public"]["Tables"]["deals"]["Row"];
 export type DealInsert = Database["public"]["Tables"]["deals"]["Insert"];
 export type DealUpdate = Database["public"]["Tables"]["deals"]["Update"];
 
+export type Activity = Database["public"]["Tables"]["activities"]["Row"];
+export type ActivityInsert = Database["public"]["Tables"]["activities"]["Insert"];
+
 // Insert types
 export type TaskInsert = Database["public"]["Tables"]["tasks"]["Insert"];
 export type TaskUpdate = Database["public"]["Tables"]["tasks"]["Update"];

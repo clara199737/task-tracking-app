@@ -337,6 +337,44 @@ export type Database = {
           },
         ];
       };
+      activities: {
+        Row: {
+          id: string;
+          deal_id: string;
+          user_id: string;
+          type: "call" | "email" | "meeting" | "note" | "stage_change";
+          notes: string | null;
+          occurred_at: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          deal_id: string;
+          user_id: string;
+          type: "call" | "email" | "meeting" | "note" | "stage_change";
+          notes?: string | null;
+          occurred_at?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          deal_id?: string;
+          user_id?: string;
+          type?: "call" | "email" | "meeting" | "note" | "stage_change";
+          notes?: string | null;
+          occurred_at?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "activities_deal_id_fkey";
+            columns: ["deal_id"];
+            isOneToOne: false;
+            referencedRelation: "deals";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       deals: {
         Row: {
           id: string;

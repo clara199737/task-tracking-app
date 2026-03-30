@@ -3,6 +3,23 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod/v4";
+import { STAGE_LABELS, type DealStage } from "@/lib/constants";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+async function logStageChange(
+  supabase: SupabaseClient,
+  userId: string,
+  dealId: string,
+  newStage: DealStage
+) {
+  await supabase.from("activities").insert({
+    deal_id: dealId,
+    user_id: userId,
+    type: "stage_change",
+    notes: `Stage changed to ${STAGE_LABELS[newStage]}`,
+    occurred_at: new Date().toISOString().slice(0, 10),
+  });
+}
 
 const dealSchema = z.object({
   name: z.string().min(1, "Deal name is required"),
@@ -86,6 +103,14 @@ export async function updateDeal(dealId: string, formData: FormData) {
     return { error: parsed.error.issues[0].message };
   }
 
+  // Fetch current stage before updating so we can detect a change
+  const { data: existing } = await supabase
+    .from("deals")
+    .select("stage")
+    .eq("id", dealId)
+    .eq("user_id", user.id)
+    .single();
+
   const { error } = await supabase
     .from("deals")
     .update({
@@ -105,21 +130,33 @@ export async function updateDeal(dealId: string, formData: FormData) {
 
   if (error) return { error: error.message };
 
+  if (existing && existing.stage !== parsed.data.stage) {
+    await logStageChange(supabase, user.id, dealId, parsed.data.stage as DealStage);
+  }
+
   revalidatePath("/pipeline");
 }
 
 export async function updateDealStage(dealId: string, stage: string) {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
   const { error } = await supabase
     .from("deals")
     .update({
-      stage: stage as "lead" | "qualified" | "proposal" | "negotiation" | "won" | "lost",
+      stage: stage as DealStage,
       updated_at: new Date().toISOString(),
     })
-    .eq("id", dealId);
+    .eq("id", dealId)
+    .eq("user_id", user.id);
 
   if (error) return { error: error.message };
+
+  await logStageChange(supabase, user.id, dealId, stage as DealStage);
 
   revalidatePath("/pipeline");
 }

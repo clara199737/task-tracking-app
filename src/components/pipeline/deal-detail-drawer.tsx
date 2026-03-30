@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useActionState } from "react";
+import { useState, useEffect, useActionState } from "react";
 import { cn } from "@/lib/utils";
 import { DEAL_STAGES, STAGE_LABELS } from "@/lib/constants";
 import { Input } from "@/components/ui/input";
@@ -8,8 +8,10 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { updateDeal, deleteDeal } from "@/actions/deal-actions";
+import { getActivitiesForDeal } from "@/actions/activity-actions";
+import { ActivityLog } from "./activity-log";
 import { X } from "lucide-react";
-import type { Deal } from "@/types";
+import type { Deal, Activity } from "@/types";
 
 interface DealDetailDrawerProps {
   deal: Deal | null;
@@ -28,6 +30,19 @@ export function DealDetailDrawer({
   onDealUpdated,
 }: DealDetailDrawerProps) {
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [activities, setActivities] = useState<Activity[]>([]);
+
+  useEffect(() => {
+    if (!deal) {
+      setActivities([]);
+      return;
+    }
+    getActivitiesForDeal(deal.id).then(setActivities);
+  }, [deal?.id]);
+
+  const fetchActivities = () => {
+    if (deal) getActivitiesForDeal(deal.id).then(setActivities);
+  };
 
   const [saveState, saveAction, isSaving] = useActionState(
     async (_prev: { error?: string } | null, formData: FormData) => {
@@ -53,7 +68,6 @@ export function DealDetailDrawer({
     null
   );
 
-  // Reset confirm state when drawer opens/closes
   const handleClose = () => {
     setConfirmDelete(false);
     onClose();
@@ -77,9 +91,9 @@ export function DealDetailDrawer({
         )}
       >
         {deal && (
-          <form action={saveAction} className="flex h-full flex-col">
+          <div className="flex h-full flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-border px-6 py-4">
+            <div className="flex items-center justify-between border-b border-border px-6 py-4 shrink-0">
               <h2 className="text-lg font-semibold truncate pr-4">
                 Edit Deal
               </h2>
@@ -92,139 +106,155 @@ export function DealDetailDrawer({
               </button>
             </div>
 
-            {/* Content */}
-            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-              {(saveState?.error || deleteState?.error) && (
-                <p className="text-sm text-destructive">
-                  {saveState?.error || deleteState?.error}
-                </p>
-              )}
+            {/* Scrollable content */}
+            <div className="flex-1 overflow-y-auto">
+              {/* Edit form */}
+              <form action={saveAction}>
+                <div className="px-6 py-4 space-y-4">
+                  {(saveState?.error || deleteState?.error) && (
+                    <p className="text-sm text-destructive">
+                      {saveState?.error || deleteState?.error}
+                    </p>
+                  )}
 
-              <Input
-                id="drawer-name"
-                name="name"
-                label="Deal Name *"
-                defaultValue={deal.name}
-                required
-              />
+                  <Input
+                    id="drawer-name"
+                    name="name"
+                    label="Deal Name *"
+                    defaultValue={deal.name}
+                    required
+                  />
 
-              <Input
-                id="drawer-company"
-                name="company"
-                label="Company"
-                defaultValue={deal.company ?? ""}
-              />
+                  <Input
+                    id="drawer-company"
+                    name="company"
+                    label="Company"
+                    defaultValue={deal.company ?? ""}
+                  />
 
-              <Input
-                id="drawer-contact"
-                name="contact_name"
-                label="Contact Name"
-                defaultValue={deal.contact_name ?? ""}
-              />
+                  <Input
+                    id="drawer-contact"
+                    name="contact_name"
+                    label="Contact Name"
+                    defaultValue={deal.contact_name ?? ""}
+                  />
 
-              <Input
-                id="drawer-value"
-                name="value"
-                label="Deal Value ($)"
-                type="number"
-                min="0"
-                step="1"
-                defaultValue={deal.value ?? ""}
-              />
+                  <Input
+                    id="drawer-value"
+                    name="value"
+                    label="Deal Value ($)"
+                    type="number"
+                    min="0"
+                    step="1"
+                    defaultValue={deal.value ?? ""}
+                  />
 
-              <Select
-                id="drawer-stage"
-                name="stage"
-                label="Stage"
-                options={stageOptions}
-                defaultValue={deal.stage}
-              />
+                  <Select
+                    id="drawer-stage"
+                    name="stage"
+                    label="Stage"
+                    options={stageOptions}
+                    defaultValue={deal.stage}
+                  />
 
-              <Input
-                id="drawer-close-date"
-                name="close_date"
-                label="Expected Close Date"
-                type="date"
-                defaultValue={deal.close_date ?? ""}
-              />
+                  <Input
+                    id="drawer-close-date"
+                    name="close_date"
+                    label="Expected Close Date"
+                    type="date"
+                    defaultValue={deal.close_date ?? ""}
+                  />
 
-              <Input
-                id="drawer-next-action"
-                name="next_action"
-                label="Next Action"
-                maxLength={100}
-                defaultValue={deal.next_action ?? ""}
-              />
+                  <Input
+                    id="drawer-next-action"
+                    name="next_action"
+                    label="Next Action"
+                    maxLength={100}
+                    defaultValue={deal.next_action ?? ""}
+                  />
 
-              <Input
-                id="drawer-follow-up-date"
-                name="follow_up_date"
-                label="Follow-Up Reminder"
-                type="date"
-                defaultValue={deal.follow_up_date ?? ""}
-              />
+                  <Input
+                    id="drawer-follow-up-date"
+                    name="follow_up_date"
+                    label="Follow-Up Reminder"
+                    type="date"
+                    defaultValue={deal.follow_up_date ?? ""}
+                  />
 
-              <Textarea
-                id="drawer-notes"
-                name="notes"
-                label="Notes"
-                defaultValue={deal.notes ?? ""}
-                rows={4}
-              />
-            </div>
+                  <Textarea
+                    id="drawer-notes"
+                    name="notes"
+                    label="Notes"
+                    defaultValue={deal.notes ?? ""}
+                    rows={4}
+                  />
+                </div>
 
-            {/* Footer */}
-            <div className="border-t border-border px-6 py-4 space-y-3">
-              <div className="flex items-center justify-end gap-3">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={handleClose}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isSaving}>
-                  {isSaving ? "Saving..." : "Save"}
-                </Button>
-              </div>
+                {/* Save / Delete footer */}
+                <div className="border-t border-border px-6 py-4 space-y-3">
+                  <div className="flex items-center justify-end gap-3">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={handleClose}
+                    >
+                      Cancel
+                    </Button>
+                    <Button type="submit" disabled={isSaving}>
+                      {isSaving ? "Saving..." : "Save"}
+                    </Button>
+                  </div>
 
-              <div className="pt-2 border-t border-border">
-                {confirmDelete ? (
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm text-destructive">Delete this deal?</p>
-                    <div className="flex gap-2">
+                  <div className="pt-2 border-t border-border">
+                    {confirmDelete ? (
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm text-destructive">
+                          Delete this deal?
+                        </p>
+                        <div className="flex gap-2">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setConfirmDelete(false)}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            disabled={isDeleting}
+                            onClick={() => handleDelete()}
+                          >
+                            {isDeleting ? "Deleting..." : "Confirm Delete"}
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
                       <Button
                         type="button"
                         variant="ghost"
-                        size="sm"
-                        onClick={() => setConfirmDelete(false)}
+                        className="text-destructive hover:text-destructive"
+                        onClick={() => setConfirmDelete(true)}
                       >
-                        Cancel
+                        Delete Deal
                       </Button>
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="sm"
-                        disabled={isDeleting}
-                        onClick={() => handleDelete()}
-                      >
-                        {isDeleting ? "Deleting..." : "Confirm Delete"}
-                      </Button>
-                    </div>
+                    )}
                   </div>
-                ) : (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    className="text-destructive hover:text-destructive"
-                    onClick={() => setConfirmDelete(true)}
-                  >
-                    Delete Deal
-                  </Button>
-                )}
+                </div>
+              </form>
+
+              {/* Activity log — separate from the edit form */}
+              <div className="border-t border-border px-6 py-4">
+                <ActivityLog
+                  activities={activities}
+                  dealId={deal.id}
+                  onActivityLogged={fetchActivities}
+                />
               </div>
             </div>
-          </form>
+          </div>
         )}
       </div>
     </>
