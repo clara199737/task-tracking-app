@@ -17,7 +17,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { useDroppable } from "@dnd-kit/core";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency, getReminderStatus } from "@/lib/utils";
 import {
   DEAL_STAGES,
   STAGE_LABELS,
@@ -25,7 +25,7 @@ import {
   type DealStage,
 } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Bell } from "lucide-react";
 import { DealCard } from "./deal-card";
 import { DealDetailDrawer } from "./deal-detail-drawer";
 import { AddDealModal } from "./add-deal-modal";
@@ -124,6 +124,13 @@ export function PipelineBoard({ deals: initialDeals }: PipelineBoardProps) {
 
   const activeDeal = deals.find((d) => d.id === activeId);
 
+  const dueToday = deals.filter(
+    (d) => getReminderStatus(d.follow_up_date, d.stage) === "due_today"
+  ).length;
+  const overdue = deals.filter(
+    (d) => getReminderStatus(d.follow_up_date, d.stage) === "overdue"
+  ).length;
+
   function handleDragStart(event: DragStartEvent) {
     setActiveId(event.active.id as string);
   }
@@ -169,6 +176,23 @@ export function PipelineBoard({ deals: initialDeals }: PipelineBoardProps) {
 
   return (
     <>
+      {(dueToday > 0 || overdue > 0) && (
+        <div className="mb-4 flex items-center gap-2 rounded-lg bg-amber-50 border border-amber-200 px-4 py-2.5 text-sm text-amber-800">
+          <Bell className="h-4 w-4 shrink-0 text-amber-500" />
+          <span>
+            You have{" "}
+            {dueToday > 0 && (
+              <strong>{dueToday} follow-up{dueToday !== 1 ? "s" : ""} due today</strong>
+            )}
+            {dueToday > 0 && overdue > 0 && " and "}
+            {overdue > 0 && (
+              <strong>{overdue} overdue</strong>
+            )}
+            .
+          </span>
+        </div>
+      )}
+
       <div className="flex justify-end mb-4">
         <Button onClick={() => setShowAddModal(true)}>
           <Plus className="h-4 w-4" />

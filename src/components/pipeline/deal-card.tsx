@@ -3,7 +3,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatCurrency, getDaysInStage } from "@/lib/utils";
+import { formatCurrency, getDaysInStage, getReminderStatus } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar, Clock } from "lucide-react";
 import type { Deal } from "@/types";
@@ -16,6 +16,7 @@ interface DealCardProps {
 
 export function DealCard({ deal, onClick, isDragOverlay }: DealCardProps) {
   const daysInStage = getDaysInStage(deal.updated_at);
+  const reminderStatus = getReminderStatus(deal.follow_up_date, deal.stage);
 
   const {
     attributes,
@@ -50,6 +51,18 @@ export function DealCard({ deal, onClick, isDragOverlay }: DealCardProps) {
           <p className="font-semibold text-sm text-foreground truncate">
             {deal.name}
           </p>
+
+          {reminderStatus === "due_today" && (
+            <span className="inline-block rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
+              Follow-up due today
+            </span>
+          )}
+
+          {reminderStatus === "overdue" && (
+            <span className="inline-block rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
+              Follow-up overdue
+            </span>
+          )}
 
           {deal.next_action && (
             <p className="text-xs text-muted-foreground">

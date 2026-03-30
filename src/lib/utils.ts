@@ -45,3 +45,15 @@ export function generateSlug(name: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 }
+
+export function getReminderStatus(
+  followUpDate: string | null,
+  stage: string
+): "overdue" | "due_today" | null {
+  if (!followUpDate) return null;
+  if (stage === "won" || stage === "lost") return null;
+  const today = new Date().toISOString().slice(0, 10);
+  if (followUpDate === today) return "due_today";
+  if (followUpDate < today) return "overdue";
+  return null;
+}
