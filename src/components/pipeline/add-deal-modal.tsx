@@ -86,6 +86,21 @@ export function AddDealModal({ open, onClose }: AddDealModalProps) {
             type="date"
           />
 
+          <Input
+            id="next_action"
+            name="next_action"
+            label="Next Action"
+            placeholder="e.g. Send revised proposal"
+            maxLength={100}
+          />
+
+          <Input
+            id="follow_up_date"
+            name="follow_up_date"
+            label="Follow-Up Reminder"
+            type="date"
+          />
+
           <Textarea
             id="notes"
             name="notes"
