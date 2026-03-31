@@ -36,31 +36,55 @@ export type Database = {
         };
         Relationships: [];
       };
+      teams: {
+        Row: {
+          id: string;
+          name: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           id: string;
           school_id: string | null;
+          team_id: string | null;
           full_name: string;
           avatar_url: string | null;
           role: "owner" | "instructor" | "admin_desk";
+          pipeline_role: "rep" | "manager" | null;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id: string;
           school_id?: string | null;
+          team_id?: string | null;
           full_name: string;
           avatar_url?: string | null;
           role?: "owner" | "instructor" | "admin_desk";
+          pipeline_role?: "rep" | "manager" | null;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
           school_id?: string | null;
+          team_id?: string | null;
           full_name?: string;
           avatar_url?: string | null;
           role?: "owner" | "instructor" | "admin_desk";
+          pipeline_role?: "rep" | "manager" | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -379,6 +403,8 @@ export type Database = {
         Row: {
           id: string;
           user_id: string;
+          team_id: string | null;
+          created_by: string | null;
           name: string;
           company: string | null;
           contact_name: string | null;
@@ -394,6 +420,8 @@ export type Database = {
         Insert: {
           id?: string;
           user_id: string;
+          team_id?: string | null;
+          created_by?: string | null;
           name: string;
           company?: string | null;
           contact_name?: string | null;
@@ -409,6 +437,8 @@ export type Database = {
         Update: {
           id?: string;
           user_id?: string;
+          team_id?: string | null;
+          created_by?: string | null;
           name?: string;
           company?: string | null;
           contact_name?: string | null;

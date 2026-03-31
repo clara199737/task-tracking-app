@@ -71,6 +71,15 @@ export const STAGE_COLORS: Record<DealStage, { bg: string; text: string }> = {
   lost: { bg: "bg-gray-100", text: "text-gray-500" },
 };
 
+// Pipeline roles (separate from school app roles)
+export const PIPELINE_ROLES = ["rep", "manager"] as const;
+export type PipelineRole = (typeof PIPELINE_ROLES)[number];
+
+export const PIPELINE_ROLE_LABELS: Record<PipelineRole, string> = {
+  rep: "Sales Rep",
+  manager: "Sales Manager",
+};
+
 export const DEFAULT_CATEGORIES = [
   { name: "Admin", color: "#00008B" },
   { name: "Student Follow-Up", color: "#800080" },
